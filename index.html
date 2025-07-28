@@ -3,15 +3,64 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Happy Birthday! 🎉</title>
-  <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Poppins:wght@400;700&display=swap" rel="stylesheet">
+  <title>🎉 Happy Birthday 🎉</title>
+  <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Poppins:wght@400;600&display=swap" rel="stylesheet">
   <style>
-    body {
+    body, html {
       margin: 0;
-      font-family: 'Poppins', sans-serif;
-      background: url('your_background.jpg') no-repeat center center/cover;
-      color: #fff;
+      padding: 0;
+      height: 100%;
       overflow: hidden;
+      font-family: 'Poppins', sans-serif;
+      background: url('https://i.ibb.co/FKhXcQD/balloons-cake-bg.jpg') no-repeat center center fixed;
+      background-size: cover;
+      color: #fff;
+    }
+
+    .overlay {
+      background: rgba(0, 0, 0, 0.6);
+      height: 100%;
+      width: 100%;
+      position: absolute;
+      top: 0;
+      left: 0;
+    }
+
+    .message {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      text-align: center;
+      font-size: 2.5rem;
+      opacity: 0;
+      transition: all 1.2s ease;
+      padding: 20px;
+      background: rgba(255, 255, 255, 0.15);
+      border-radius: 20px;
+      box-shadow: 0 0 30px #fff5;
+    }
+
+    .message.show {
+      opacity: 1;
+    }
+
+    .slide-top    { transform: translate(-50%, -200%); }
+    .slide-left   { transform: translate(-200%, -50%) rotate(-10deg); }
+    .slide-right  { transform: translate(200%, -50%) rotate(10deg); }
+    .slide-bottom { transform: translate(-50%, 200%) rotate(5deg); }
+    .zoom-in      { transform: scale(0.1); }
+    .rotate-in    { transform: rotate(-720deg); }
+
+    .message.animate-in {
+      transform: translate(-50%, -50%) scale(1) rotate(0deg);
+    }
+
+    h1 {
+      font-family: 'Pacifico', cursive;
+      font-size: 4rem;
+      color: #ffeb3b;
+      text-shadow: 2px 2px #f06292;
     }
 
     .confetti {
@@ -19,43 +68,12 @@
       top: 0; left: 0;
       width: 100%; height: 100%;
       pointer-events: none;
-      z-index: 5;
+      z-index: 0;
     }
-
-    .slide {
-      position: absolute;
-      top: 50%; left: 50%;
-      transform: translate(-50%, -50%);
-      opacity: 0;
-      padding: 40px;
-      background: rgba(0, 0, 0, 0.5);
-      font-size: 2rem;
-      border-radius: 20px;
-      text-align: center;
-      box-shadow: 0 0 30px #ff9ef3;
-      max-width: 80%;
-      animation-duration: 2s;
-      z-index: 10;
-    }
-
-    .show { opacity: 1 !important; }
-
-    @keyframes fromTop { 0%{transform: translate(-50%, -200%) rotate(0);} 100%{transform: translate(-50%, -50%) rotate(360deg);} }
-    @keyframes fromLeft { 0%{transform: translate(-200%, -50%) rotate(-180deg);} 100%{transform: translate(-50%, -50%) rotate(0);} }
-    @keyframes fromBottom { 0%{transform: translate(-50%, 200%) rotate(0);} 100%{transform: translate(-50%, -50%) rotate(360deg);} }
-    @keyframes fromRight { 0%{transform: translate(200%, -50%) rotate(180deg);} 100%{transform: translate(-50%, -50%) rotate(0);} }
-    @keyframes zoomIn { 0%{transform: scale(0) rotate(0);} 100%{transform: scale(1) rotate(360deg);} }
-
-    .from-top.show { animation: fromTop 1.5s forwards; }
-    .from-left.show { animation: fromLeft 1.5s forwards; }
-    .from-bottom.show { animation: fromBottom 1.5s forwards; }
-    .from-right.show { animation: fromRight 1.5s forwards; }
-    .zoom-in.show { animation: zoomIn 1.5s forwards; }
   </style>
 </head>
 <body>
-
-<!-- 🎶 Music -->
+  <!-- 🎶 Music -->
 <audio autoplay loop>
   <source src="my_song.mp3" type="audio/mpeg">
 </audio>
@@ -66,86 +84,98 @@
 <!-- 💌 Slide container -->
 <div id="slideContainer"></div>
 
-<script>
+ <script>
   const messages = [
-    "🎈 Wishing you balloons full of joy!",
-    "🎂 A cake as sweet as your smile!",
-    "💖 Hope today is filled with love!",
-    "✨ May your year sparkle with happiness!",
-    "🎉 Happy Birthday from Anand!"
+    "Hey! 🎈 Today’s a little brighter than usual...",
+    "Because it’s your special day! ✨",
+    "Wishing you a birthday full of smiles, cake, and beautiful moments 🎂",
+    "You truly deserve all the happiness life can bring 💖",
+    "Keep shining, keep smiling, and keep being *you* 🌟",
+    "Just a little digital magic to make your day more colorful 🎉",
+    "Enjoy every second, dance a little, and eat a lot of cake! 😄",
+    "Happy Birthday once again! 🎁"
   ];
 
-  const animations = ["from-top", "from-left", "from-bottom", "from-right", "zoom-in"];
+  const animations = [
+    'slide-top', 'zoom-in', 'slide-right', 'rotate-in', 'fade-in', 'slide-left'
+  ];
 
-  function createSlide(msg, animation) {
-    const slide = document.createElement("div");
-    slide.className = `slide ${animation}`;
-    slide.innerHTML = msg;
-    document.getElementById("slideContainer").appendChild(slide);
-    return slide;
-  }
+  const msgBox = document.getElementById("msgBox");
 
-  async function showSlides() {
+  async function showMessages() {
     for (let i = 0; i < messages.length; i++) {
-      const anim = animations[i % animations.length];
-      const slide = createSlide(messages[i], anim);
-      await new Promise(r => setTimeout(() => {
-        slide.classList.add("show");
-        r();
-      }, 100));
-      await new Promise(r => setTimeout(r, 4500));
-      slide.remove();
+      const div = document.createElement("div");
+      div.className = `message ${animations[i % animations.length]}`;
+      div.innerHTML = `<h1>${messages[i]}</h1>`;
+      msgBox.appendChild(div);
+
+      await new Promise(resolve => setTimeout(resolve, 100));
+      div.classList.add('show', 'animate-in');
+
+      await new Promise(resolve => setTimeout(resolve, 4000));
+      div.remove();
     }
+
+    // Optional: Auto-close or show final animation here
   }
 
-  showSlides();
-
-  // Confetti
-  const canvas = document.getElementById("confetti");
-  const ctx = canvas.getContext("2d");
-  canvas.width = window.innerWidth;
-  canvas.height = window.innerHeight;
-
-  const confetti = Array.from({ length: 100 }).map(() => ({
-    x: Math.random() * canvas.width,
-    y: Math.random() * canvas.height,
-    r: Math.random() * 6 + 4,
-    color: `hsl(${Math.random() * 360}, 70%, 60%)`,
-    d: Math.random() * 50 + 10,
-    tilt: Math.random() * 10 - 10,
-    tiltAngle: 0,
-    tiltIncrement: Math.random() * 0.1 + 0.05
-  }));
-
-  function drawConfetti() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    confetti.forEach(c => {
-      ctx.beginPath();
-      ctx.lineWidth = c.r / 2;
-      ctx.strokeStyle = c.color;
-      ctx.moveTo(c.x + c.tilt, c.y);
-      ctx.lineTo(c.x, c.y + c.tilt + c.r);
-      ctx.stroke();
-    });
-    updateConfetti();
-    requestAnimationFrame(drawConfetti);
-  }
-
-  function updateConfetti() {
-    confetti.forEach(c => {
-      c.y += 2;
-      c.tiltAngle += c.tiltIncrement;
-      c.tilt = Math.sin(c.tiltAngle) * 15;
-      if (c.y > canvas.height) {
-        c.y = -10;
-        c.x = Math.random() * canvas.width;
-      }
-    });
-  }
-
-  drawConfetti();
+  showMessages();
 </script>
 
+
+      alert("🎉 That’s all! Hope you liked the surprise!");
+    }
+
+    showMessages();
+
+    // Confetti
+    const canvas = document.getElementById("confetti");
+    const ctx = canvas.getContext("2d");
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    const confetti = Array.from({ length: 150 }, () => ({
+      x: Math.random() * canvas.width,
+      y: Math.random() * canvas.height - canvas.height,
+      r: Math.random() * 6 + 4,
+      d: Math.random() * 50 + 10,
+      color: `hsl(${Math.random() * 360}, 70%, 60%)`,
+      tilt: Math.random() * 10 - 10,
+      tiltAngleIncremental: Math.random() * 0.1 + 0.05,
+      tiltAngle: 0
+    }));
+
+    function drawConfetti() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      for (const c of confetti) {
+        ctx.beginPath();
+        ctx.lineWidth = c.r / 2;
+        ctx.strokeStyle = c.color;
+        ctx.moveTo(c.x + c.tilt + c.r / 4, c.y);
+        ctx.lineTo(c.x + c.tilt, c.y + c.tilt + c.r / 4);
+        ctx.stroke();
+      }
+      updateConfetti();
+    }
+
+    function updateConfetti() {
+      for (const c of confetti) {
+        c.tiltAngle += c.tiltAngleIncremental;
+        c.y += (Math.cos(c.d) + 3 + c.r / 2) / 2;
+        c.tilt = Math.sin(c.tiltAngle) * 15;
+
+        if (c.y > canvas.height) {
+          c.y = -10;
+          c.x = Math.random() * canvas.width;
+        }
+      }
+    }
+
+    (function animateConfetti() {
+      drawConfetti();
+      requestAnimationFrame(animateConfetti);
+    })();
+  </script>
 </body>
 </html>
 
