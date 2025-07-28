@@ -1,26 +1,21 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Birthday Surprise 💖</title>
+  <title>Birthday Surprise 🎂</title>
   <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Poppins:wght@400;700&display=swap" rel="stylesheet">
   <style>
-     body {
+    body, html {
       margin: 0;
+      padding: 0;
+      height: 100%;
       font-family: 'Poppins', sans-serif;
-      background: linear-gradient(135deg, #ffccd5, #ffe5ec);
+      background: url('background.jpg') no-repeat center center/cover;
       overflow: hidden;
-      text-align: center;
+      color: white;
     }
-   .container {
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-      animation: fadeIn 3s ease-out;
-    }
+
     #startScreen {
       position: fixed;
       top: 0; left: 0;
@@ -35,12 +30,13 @@
     }
 
     #startScreen h1 {
-      font-size: 3rem;
+      font-family: 'Pacifico', cursive;
+      font-size: 4rem;
     }
 
     #startScreen button {
       margin-top: 20px;
-      padding: 20px 40px;
+      padding: 15px 30px;
       font-size: 1.5rem;
       background: #ff4081;
       color: white;
@@ -48,6 +44,15 @@
       border-radius: 30px;
       cursor: pointer;
       box-shadow: 0 0 15px #fff;
+    }
+
+    .confetti {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 5;
     }
 
     .slide {
@@ -66,45 +71,39 @@
       z-index: 2;
     }
 
-    .slide.show {
-      opacity: 1;
-    }
+    .slide.show { opacity: 1; }
 
-    /* Animation directions */
-    .from-top { transform: translate(-50%, -200%); }
+    .from-top    { transform: translate(-50%, -200%); }
     .from-bottom { transform: translate(-50%, 200%); }
-    .from-left { transform: translate(-200%, -50%); }
-    .from-right { transform: translate(200%, -50%); }
-    .zoom-in { transform: scale(0.1); }
-    .fade-in { opacity: 0; }
+    .from-left   { transform: translate(-200%, -50%); }
+    .from-right  { transform: translate(200%, -50%); }
+    .zoom-in     { transform: scale(0.1); }
+    .fade-in     { opacity: 0; }
 
     .slide.show.from-top,
     .slide.show.from-bottom,
     .slide.show.from-left,
-    .slide.show.from-right {
-      transform: translate(-50%, -50%);
-    }
-
-    .slide.show.zoom-in {
-      transform: translate(-50%, -50%) scale(1);
-    }
-
+    .slide.show.from-right,
+    .slide.show.zoom-in,
     .slide.show.fade-in {
+      transform: translate(-50%, -50%) scale(1);
       opacity: 1;
-      transform: translate(-50%, -50%);
     }
   </style>
 </head>
 <body>
 
-<!-- 🔊 Background Music -->
-<audio id="bgMusic" loop>
-  <source src="my_song.mp3" type="audio/mp3">
+<!-- Confetti Canvas -->
+<canvas class="confetti" id="confetti"></canvas>
+
+<!-- Music -->
+<audio id="bgMusic" loop autoplay>
+  <source src="your_song.mp3" type="audio/mpeg">
 </audio>
 
 <!-- Start Screen -->
 <div id="startScreen">
-  <h1>🎁 Surprise?</h1>
+  <h1>🎁 Ready for the Surprise?</h1>
   <button onclick="startSurprise()">Start</button>
 </div>
 
@@ -113,15 +112,14 @@
 
 <script>
   const messages = [
-  "🎉 Hey Hey! It's your special day!",
-  "🎂 Wishing you a day full of cake, fun & smiles!",
-  "💬 You’re awesome just the way you are.",
-  "🎈 Keep shining, keep laughing, keep being you!",
-  "🌟 May this year bring you everything you love.",
-  "😄 Stay happy, stay cool — Happy Birthday!",
-  "🧁 From your friend — Anand!"
-];
-
+    "🎉 Hey Hey! It's your special day!",
+    "🎂 Wishing you a day full of cake, fun & smiles!",
+    "💬 You’re awesome just the way you are.",
+    "🎈 Keep shining, keep laughing, keep being you!",
+    "🌟 May this year bring you everything you love.",
+    "😄 Stay happy, stay cool — Happy Birthday!",
+    "🧁 From your friend — Anand! 💌"
+  ];
 
   const animations = [
     "from-top", "from-left", "zoom-in",
@@ -148,7 +146,7 @@
         res();
       }, 100));
 
-      await new Promise(res => setTimeout(res, 5000)); // wait before hiding
+      await new Promise(res => setTimeout(res, 4000)); // Display each slide
 
       slide.classList.remove("show");
       slide.style.opacity = "0";
@@ -159,9 +157,8 @@
       }, 1000));
     }
 
-    // Final message or close
-    window.close(); // Will close only if opened in a new tab via JS
-    alert("🎉 Thank you for watching! Surprise Over.");
+    // End
+    alert("🎉 Surprise Over! Thank you!");
   }
 
   function startSurprise() {
@@ -170,6 +167,56 @@
     audio.play().catch(e => console.log("Autoplay blocked:", e));
     showSlides();
   }
+
+  // Confetti animation
+  const canvas = document.getElementById("confetti");
+  const context = canvas.getContext("2d");
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+
+  const confetti = [];
+  for (let i = 0; i < 150; i++) {
+    confetti.push({
+      x: Math.random() * canvas.width,
+      y: Math.random() * canvas.height - canvas.height,
+      r: Math.random() * 6 + 4,
+      d: Math.random() * 50 + 10,
+      color: `hsl(${Math.random() * 360}, 70%, 60%)`,
+      tilt: Math.random() * 10 - 10,
+      tiltAngleIncremental: Math.random() * 0.1 + 0.05,
+      tiltAngle: 0
+    });
+  }
+
+  function drawConfetti() {
+    context.clearRect(0, 0, canvas.width, canvas.height);
+    confetti.forEach(c => {
+      context.beginPath();
+      context.lineWidth = c.r / 2;
+      context.strokeStyle = c.color;
+      context.moveTo(c.x + c.tilt + c.r / 4, c.y);
+      context.lineTo(c.x + c.tilt, c.y + c.tilt + c.r / 4);
+      context.stroke();
+    });
+    updateConfetti();
+  }
+
+  function updateConfetti() {
+    confetti.forEach(c => {
+      c.tiltAngle += c.tiltAngleIncremental;
+      c.y += (Math.cos(c.d) + 3 + c.r / 2) / 2;
+      c.tilt = Math.sin(c.tiltAngle) * 15;
+      if (c.y > canvas.height) {
+        c.y = -10;
+        c.x = Math.random() * canvas.width;
+      }
+    });
+  }
+
+  (function animateConfetti() {
+    drawConfetti();
+    requestAnimationFrame(animateConfetti);
+  })();
 </script>
 
 </body>
