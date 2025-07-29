@@ -1,145 +1,157 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Happy Birthday 🎉</title>
+  <meta charset="UTF-8">
+  <title>Birthday Celebration</title>
   <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Poppins:wght@400;700&display=swap" rel="stylesheet">
   <style>
     body {
       margin: 0;
-      font-family: 'Poppins', sans-serif;
-      background: url('https://cdn.pixabay.com/photo/2017/01/06/19/15/happy-birthday-1958659_1280.jpg') no-repeat center center/cover;
-      color: #fff;
+      padding: 0;
       overflow: hidden;
-    }
-
-    .container {
-      position: relative;
-      text-align: center;
-      top: 20%;
-      z-index: 2;
-      animation: fadeIn 3s ease-in-out;
-    }
-
-    h1 {
-      font-family: 'Pacifico', cursive;
-      font-size: 4rem;
+      background: url('https://i.ibb.co/hLCjHLD/birthday-bg.jpg') no-repeat center center fixed;
+      background-size: cover;
+      font-family: 'Poppins', sans-serif;
       color: #fff;
-      animation: slideInLeft 2s ease-out;
     }
 
-    p {
-      font-size: 1.5rem;
-      margin-top: 10px;
-      animation: slideInRight 2s ease-out;
-    }
-
-    .cake {
+    #cake {
+      position: absolute;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
       width: 200px;
-      height: 200px;
-      background: url('https://cdn.pixabay.com/photo/2016/04/01/09/09/birthday-cake-1307610_1280.png') no-repeat center/contain;
-      margin: 30px auto;
       animation: bounce 2s infinite;
     }
 
-    canvas.confetti {
+    @keyframes bounce {
+      0%, 100% { transform: translateX(-50%) translateY(0); }
+      50% { transform: translateX(-50%) translateY(-20px); }
+    }
+
+    .slide {
+      position: absolute;
+      font-size: 2rem;
+      padding: 20px 40px;
+      background: rgba(0, 0, 0, 0.5);
+      border-radius: 15px;
+      opacity: 0;
+      white-space: nowrap;
+      transition: all 1s ease;
+    }
+
+    .show {
+      opacity: 1 !important;
+    }
+
+    .from-left { left: -100%; top: 20%; animation: slideLeft 1s forwards; }
+    .from-right { right: -100%; top: 35%; animation: slideRight 1s forwards; }
+    .from-top { top: -100%; left: 30%; animation: slideTop 1s forwards; }
+    .from-bottom { bottom: -100%; left: 35%; animation: slideBottom 1s forwards; }
+
+    @keyframes slideLeft {
+      to { left: 20%; opacity: 1; }
+    }
+
+    @keyframes slideRight {
+      to { right: 20%; opacity: 1; }
+    }
+
+    @keyframes slideTop {
+      to { top: 25%; opacity: 1; }
+    }
+
+    @keyframes slideBottom {
+      to { bottom: 30%; opacity: 1; }
+    }
+
+    canvas {
       position: fixed;
       top: 0;
       left: 0;
-      width: 100%;
-      height: 100%;
-      z-index: 1;
-      pointer-events: none;
-    }
-
-    @keyframes fadeIn {
-      from { opacity: 0; transform: scale(0.95); }
-      to { opacity: 1; transform: scale(1); }
-    }
-
-    @keyframes slideInLeft {
-      from { transform: translateX(-100%); opacity: 0; }
-      to { transform: translateX(0); opacity: 1; }
-    }
-
-    @keyframes slideInRight {
-      from { transform: translateX(100%); opacity: 0; }
-      to { transform: translateX(0); opacity: 1; }
-    }
-
-    @keyframes bounce {
-      0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(-15px); }
+      z-index: -1;
     }
   </style>
 </head>
 <body>
 
-<canvas class="confetti" id="confetti"></canvas>
-
-<div class="container">
-  <h1>Happy Birthday 🎂</h1>
-  <div class="cake"></div>
-  <p>Wishing you the happiest of birthdays!</p>
-  <p>Hope your day is as wonderful as your smile 🌟</p>
-  <p>Warm wishes from,</p>
-  <p><strong>Anand Kumar</strong></p>
-</div>
-
-<audio autoplay loop>
-  <source src="my_song.mp3" type="audio/mpeg">
-  Your browser does not support the audio element.
+<audio id="bgMusic" autoplay loop>
+  <source src="my_song.mp3" type="audio/mp3">
 </audio>
 
+<img src="cake.png" id="cake" alt="Birthday Cake">
+
+<div class="slide from-left">Hey, just wanted to drop by...</div>
+<div class="slide from-right">To say Happy Birthday! 🎉</div>
+<div class="slide from-top">Hope your day is filled with smiles, cake and surprises!</div>
+<div class="slide from-bottom">Enjoy your moment! 🎂✨ — from Anand 😊</div>
+
+<canvas id="fireworks"></canvas>
+
 <script>
-  const canvas = document.getElementById("confetti");
-  const ctx = canvas.getContext("2d");
+  // Show slides with delay
+  const slides = document.querySelectorAll('.slide');
+  slides.forEach((slide, index) => {
+    setTimeout(() => {
+      slide.classList.add('show');
+    }, 2000 * index);
+  });
+
+  // Fireworks effect
+  const canvas = document.getElementById('fireworks');
+  const ctx = canvas.getContext('2d');
   canvas.width = window.innerWidth;
   canvas.height = window.innerHeight;
 
-  const confetti = Array.from({ length: 200 }).map(() => ({
-    x: Math.random() * canvas.width,
-    y: Math.random() * canvas.height,
-    r: Math.random() * 6 + 2,
-    d: Math.random() * 100,
-    color: `hsl(${Math.random() * 360}, 70%, 60%)`,
-    tilt: Math.random() * 10 - 10,
-    tiltAngle: 0,
-    tiltAngleIncrement: Math.random() * 0.1 + 0.05
-  }));
+  const particles = [];
 
-  function draw() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    confetti.forEach(c => {
+  function createFirework() {
+    const x = Math.random() * canvas.width;
+    const y = Math.random() * canvas.height / 2;
+    const count = 100;
+    for (let i = 0; i < count; i++) {
+      particles.push({
+        x: x,
+        y: y,
+        angle: (Math.PI * 2 * i) / count,
+        radius: 2 + Math.random() * 2,
+        speed: Math.random() * 5 + 2,
+        alpha: 1,
+        decay: Math.random() * 0.01 + 0.005,
+        color: `hsl(${Math.random() * 360}, 100%, 70%)`
+      });
+    }
+  }
+
+  function animateFireworks() {
+    ctx.fillStyle = 'rgba(0,0,0,0.2)';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    for (let i = 0; i < particles.length; i++) {
+      const p = particles[i];
+      const vx = Math.cos(p.angle) * p.speed;
+      const vy = Math.sin(p.angle) * p.speed;
+      p.x += vx;
+      p.y += vy;
+      p.alpha -= p.decay;
+
       ctx.beginPath();
-      ctx.lineWidth = c.r;
-      ctx.strokeStyle = c.color;
-      ctx.moveTo(c.x + c.tilt, c.y);
-      ctx.lineTo(c.x, c.y + c.tilt + c.r);
-      ctx.stroke();
-    });
-    update();
-  }
+      ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+      ctx.fillStyle = p.color.replace('70%', `${p.alpha * 100}%`);
+      ctx.fill();
 
-  function update() {
-    confetti.forEach(c => {
-      c.tiltAngle += c.tiltAngleIncrement;
-      c.y += (Math.cos(c.d) + 3 + c.r / 2) / 2;
-      c.tilt = Math.sin(c.tiltAngle) * 10;
-
-      if (c.y > canvas.height) {
-        c.y = -10;
-        c.x = Math.random() * canvas.width;
+      if (p.alpha <= 0) {
+        particles.splice(i, 1);
+        i--;
       }
-    });
+    }
+
+    requestAnimationFrame(animateFireworks);
   }
 
-  (function animate() {
-    draw();
-    requestAnimationFrame(animate);
-  })();
+  setInterval(createFirework, 1500);
+  animateFireworks();
 </script>
 
 </body>
 </html>
+
